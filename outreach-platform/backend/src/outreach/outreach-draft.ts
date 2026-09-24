@@ -1,4 +1,3 @@
-import { OpportunityRoleFamily } from '../opportunities/matching/opportunity-role.js';
 
 export interface CandidateProfile {
   name: string;
