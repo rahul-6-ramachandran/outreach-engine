@@ -1,0 +1,120 @@
+# ==========================================
+# Secrets and environment variables
+# ==========================================
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# ==========================================
+# Private contact data and ingestion pipeline
+# ==========================================
+/outreach-platform/ingestion/
+/outreach-platform/company_identity_v*.py
+/outreach-platform/company_intelligence_v*.py
+/outreach-platform/contact_diagnostic_v*.py
+/outreach-platform/contact_intelligence_v*.py
+/outreach-platform/contact_parser*.py
+/outreach-platform/contact_provenance_v*.py
+
+
+# Root-level private contact data engineering scripts
+/company_identity_v*.py
+/company_intelligence_v*.py
+/contact_diagnostic_v*.py
+/contact_intelligence_v*.py
+/contact_parser*.py
+/contact_provenance_v*.py
+
+# Private datasets and exports
+*.csv
+*.xlsx
+*.xls
+*.xlsm
+*.ods
+
+# Private/local data directories
+**/output/
+**/outputs/
+**/datasets/
+**/exports/
+**/private/
+**/raw/
+**/processed/
+
+# Exclude data directories only when they contain local/private data.
+# Review before adding a blanket **/data/ rule.
+
+# Private contact import scripts
+/outreach-platform/backend/scripts/import-v*.ts
+
+# Personal resume
+/outreach-platform/backend/resume/
+
+# ==========================================
+# Dependencies and virtual environments
+# ==========================================
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+**/node_modules/
+
+# ==========================================
+# Build output and caches
+# ==========================================
+/outreach-platform/backend/dist/
+/outreach-platform/backend/coverage/
+/outreach-platform/backend/.nestjs/
+**/__pycache__/
+*.py[cod]
+*.tsbuildinfo
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ==========================================
+# IDE and operating system
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Local databases and backups
+# ==========================================
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+*.sql.gz
+
+# ==========================================
+# Generated Prisma snapshots
+# ==========================================
+/outreach-platform/backend/migrations/
+
+# Do not ignore src/prisma files until confirmed
+# generated and reproducible.
+
+# ==========================================
+# Temporary files
+# ==========================================
+*.tmp
+*.bak
+*.swp

@@ -1,0 +1,240 @@
+// use prisma-next
+enum ContactEmailType {
+  NAMED_WORK
+  GENERIC_RECRUITMENT
+  GENERIC_COMPANY
+  PERSONAL_PROVIDER
+}
+
+enum IdentityConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum OutreachAttemptStatus {
+  STARTED
+  SENT
+  FAILED
+  UNKNOWN
+}
+
+enum OutreachStatus {
+  DRAFT
+  APPROVED
+  SENDING
+  SENT
+  FAILED
+  UNKNOWN
+  CANCELLED
+}
+
+
+model OutreachAttempt {
+  id Int @id @default(autoincrement())
+
+  outreach   Outreach @relation(fields: [outreachId], references: [id])
+  outreachId Int
+
+  attemptNumber Int
+
+  provider            String
+  providerMessageId   String?
+
+  status        OutreachAttemptStatus
+  errorMessage  String?
+
+  startedAt    TimestamptzString @default(now())
+  completedAt  TimestamptzString?
+
+  createdAt TimestamptzString @default(now())
+
+  @@unique([outreachId, attemptNumber])
+  @@index([outreachId])
+  @@index([status])
+}
+
+model Outreach {
+  id            Int            @id @default(autoincrement())
+
+  opportunity   Opportunity    @relation(fields: [opportunityId], references: [id])
+  opportunityId Int
+
+  contact       Contact        @relation(fields: [contactId], references: [id])
+  contactId     Int
+
+  email         String
+  subject       String
+  body          String
+
+  status        OutreachStatus @default(DRAFT)
+
+  approvedAt    TimestamptzString?
+  sentAt        TimestamptzString?
+  failedAt      TimestamptzString?
+  errorMessage  String?
+
+  createdAt     TimestamptzString @default(now())
+  updatedAt     temporal.updatedAtString()
+
+  @@index([opportunityId])
+  @@index([contactId])
+  @@index([status])
+}
+
+enum ContactRoleFamily {
+  RECRUITER
+  HIRING_MANAGER
+  HR
+  ENGINEERING_LEADERSHIP
+  LEADERSHIP
+  FOUNDER
+  UNKNOWN
+}
+
+enum OpportunityStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+model Company {
+  id             Int                        @id @default(autoincrement())
+  canonicalName  String
+  normalizedName String                     @unique
+  location       String?
+  industry       String?
+  website        String?
+
+  domains        CompanyDomain[]
+  contacts       Contact[]
+  opportunities  Opportunity[]
+
+  createdAt      TimestamptzString          @default(now())
+  updatedAt      temporal.updatedAtString()
+}
+
+model CompanyDomain {
+  id        Int               @id @default(autoincrement())
+  domain    String
+  isPrimary Boolean           @default(false)
+
+  company   Company           @relation(fields:[companyId], references:[id])
+  companyId Int
+
+  createdAt TimestamptzString @default(now())
+
+  @@unique([companyId, domain])
+  @@index([domain])
+}
+
+model Contact {
+  id                 Int                        @id @default(autoincrement())
+  name               String?
+  normalizedName     String
+  identityConfidence IdentityConfidence
+
+  company            Company?                   @relation(fields:[companyId], references:[id])
+  companyId          Int?
+
+  emails             ContactEmail[]
+  roles              ContactRole[]
+  sources            ContactSource[]
+  matches            ContactMatch[]
+  outreach             Outreach[]
+
+  doNotContact       Boolean                    @default(false)
+
+  createdAt          TimestamptzString          @default(now())
+  updatedAt          temporal.updatedAtString()
+}
+
+model ContactEmail {
+  id              Int               @id @default(autoincrement())
+  email           String
+  normalizedEmail String
+  type            ContactEmailType
+  isPrimary       Boolean           @default(false)
+  confidence      Int?
+  doNotContact    Boolean           @default(false)
+
+  contact         Contact           @relation(fields:[contactId], references:[id])
+  contactId       Int
+
+  createdAt       TimestamptzString @default(now())
+
+  @@unique([contactId, normalizedEmail])
+  @@index([normalizedEmail])
+}
+
+model ContactRole {
+  id         Int               @id @default(autoincrement())
+  title      String
+  roleFamily ContactRoleFamily
+  isCurrent  Boolean           @default(true)
+
+  contact    Contact           @relation(fields:[contactId], references:[id])
+  contactId  Int
+
+  createdAt  TimestamptzString @default(now())
+
+  @@unique([contactId, title])
+}
+
+model ContactSource {
+  id             Int               @id @default(autoincrement())
+  sourceFamily   String
+  sourceDocument String
+  sourcePage     Int?
+  sourceLine     Int?
+  sourceSerial   Int?
+
+  sourceName     String?
+  sourceEmail    String?
+  sourceTitle    String?
+  sourceCompany  String?
+
+  parseStatus    String
+  parseReason    String?
+
+  contact        Contact           @relation(fields:[contactId], references:[id])
+  contactId      Int
+
+  createdAt      TimestamptzString @default(now())
+}
+
+model Opportunity {
+  id             Int                        @id @default(autoincrement())
+  companyName    String
+  roleTitle      String
+  location       String?
+  jobUrl         String?
+  jobDescription String?
+  status         OpportunityStatus          @default(DRAFT)
+
+  company        Company?                   @relation(fields:[companyId], references:[id])
+  companyId      Int?
+
+  matches        ContactMatch[]
+    outreach       Outreach[]
+
+  createdAt      TimestamptzString          @default(now())
+  updatedAt      temporal.updatedAtString()
+}
+
+model ContactMatch {
+  id            Int               @id @default(autoincrement())
+  score         Int
+  rank          Int
+  reasons       String?
+
+  opportunity   Opportunity       @relation(fields:[opportunityId], references:[id])
+  opportunityId Int
+
+  contact       Contact           @relation(fields:[contactId], references:[id])
+  contactId     Int
+
+  createdAt     TimestamptzString @default(now())
+
+  @@unique([opportunityId, contactId])
+}
