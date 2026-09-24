@@ -4,9 +4,13 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { basename } from 'node:path';
+import { existsSync } from 'node:fs';
+
 import { DatabaseService } from '../database/database.service.js';
 import { type EmailProvider } from './email-provider.js';
 import { buildOpportunityRoleProfile } from '../opportunities/matching/opportunity-role.js';
+
 
 import { determineOutreachStrategy } from './outreach-strategy.js';
 
@@ -16,8 +20,7 @@ import { candidateProfile } from './candidate-profile.js';
 import { ContactsService } from '../contacts/contacts.service.js';
 import { PoolClient } from 'pg';
 import { EMAIL_PROVIDER } from './email-provider.token.js';
-import { basename } from 'node:path';
-import { existsSync } from 'node:fs';
+import { getEmailProviderName } from './providers/email-provider-name.js';
 
 @Injectable()
 export class OutreachService {
@@ -406,7 +409,7 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
       VALUES ($1, $2, $3, 'STARTED')
       RETURNING id;
       `,
-        [outreachId, attemptNumber, 'log'],
+        [outreachId, attemptNumber, getEmailProviderName()],
       );
 
       const attemptId = attemptResult.rows[0].id;
