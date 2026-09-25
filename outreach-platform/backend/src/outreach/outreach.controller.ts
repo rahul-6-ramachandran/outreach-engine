@@ -3,10 +3,13 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
 import { OutreachService } from './outreach.service.js';
+import { AuthGuard } from '../auth/auth.guard.js';
 
+@UseGuards(AuthGuard)
 @Controller()
 export class OutreachController {
   constructor(

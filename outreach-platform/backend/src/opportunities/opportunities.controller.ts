@@ -9,6 +9,10 @@ import {
 import { OpportunitiesService } from './opportunities.service.js';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto.js';
 
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard.js';
+
+@UseGuards(AuthGuard)
 @Controller('opportunities')
 export class OpportunitiesController {
   constructor(

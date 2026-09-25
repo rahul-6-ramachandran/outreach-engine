@@ -5,13 +5,15 @@ import { DatabaseModule } from './database/database.module.js';
 import { OpportunitiesModule } from './opportunities/opportunities.module.js';
 import { OutreachModule } from './outreach/outreach.module.js';
 import { ContactsModule } from './contacts/contacts.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
     DatabaseModule,
     OpportunitiesModule,
-     OutreachModule,
-     ContactsModule,
+    OutreachModule,
+    ContactsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

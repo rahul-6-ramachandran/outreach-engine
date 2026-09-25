@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { AuthModule } from '../auth/auth.module.js';
 import { OutreachService } from './outreach.service.js';
 import { OutreachController } from './outreach.controller.js';
 import { ContactsModule } from '../contacts/contacts.module.js';
@@ -17,7 +17,8 @@ import { createEmailProvider } from './providers/email-provider.factory.js';
   ],
   exports: [OutreachService],
   imports:[
-    ContactsModule
+    ContactsModule,
+    AuthModule
   ]
 })
 export class OutreachModule {}
