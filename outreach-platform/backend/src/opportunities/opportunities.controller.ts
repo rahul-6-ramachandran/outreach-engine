@@ -37,6 +37,15 @@ getContacts(@Param('id') id: string) {
   return this.opportunitiesService.getContacts(Number(id));
 }
 
+@Get(':id/matches/diagnostics')
+getMatchDiagnostics(@Param('id') id: string) {
+  return this.opportunitiesService.getMatchDiagnostics(Number(id));
+}
+
+@Get(':id/matches/saved')
+getSavedMatches(@Param('id') id: string) {
+  return this.opportunitiesService.getSavedMatches(Number(id));
+}
 @Get(':id/matches/:matchId')
 getMatch(
   @Param('id') id: string,
@@ -53,19 +62,16 @@ matchContacts(@Param('id') id: string) {
   return this.opportunitiesService.matchContacts(Number(id));
 }
 
-@Get(':id/matches/saved')
-getSavedMatches(@Param('id') id: string) {
-  return this.opportunitiesService.getSavedMatches(Number(id));
-}
 
 @Post(':id/matches/generate')
 generateMatches(@Param('id') id: string) {
   return this.opportunitiesService.generateMatches(Number(id));
 }
 
-@Get(':id/matches/diagnostics')
-getMatchDiagnostics(@Param('id') id: string) {
-  return this.opportunitiesService.getMatchDiagnostics(Number(id));
+
+@Get()
+getAll() {
+  return this.opportunitiesService.getAll();
 }
 
 }

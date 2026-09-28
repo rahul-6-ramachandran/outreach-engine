@@ -235,24 +235,24 @@ export class OpportunitiesService {
 
     LEFT JOIN LATERAL (
   SELECT
-    title,
-    "roleFamily"
-  FROM "contactRole"
-  WHERE "contactId" = c.id
-    AND "isCurrent" = true
-  ORDER BY
-    CASE "roleFamily"
-      WHEN 'HIRING_MANAGER' THEN 1
-      WHEN 'RECRUITER' THEN 2
-      WHEN 'ENGINEERING_LEADERSHIP' THEN 3
-      WHEN 'HR' THEN 4
-      WHEN 'LEADERSHIP' THEN 5
-      WHEN 'FOUNDER' THEN 6
-      WHEN 'UNKNOWN' THEN 7
-      ELSE 8
-    END,
-    id DESC
-  LIMIT 1
+  cr_inner.title,
+  cr_inner."roleFamily"
+FROM "contactRole" cr_inner
+WHERE cr_inner."contactId" = c.id
+  AND cr_inner."isCurrent" = true
+ORDER BY
+  CASE cr_inner."roleFamily"
+    WHEN 'HIRING_MANAGER' THEN 1
+    WHEN 'RECRUITER' THEN 2
+    WHEN 'ENGINEERING_LEADERSHIP' THEN 3
+    WHEN 'HR' THEN 4
+    WHEN 'LEADERSHIP' THEN 5
+    WHEN 'FOUNDER' THEN 6
+    WHEN 'UNKNOWN' THEN 7
+    ELSE 8
+  END,
+  cr_inner.id DESC
+LIMIT 1
 ) cr ON true
 
     LEFT JOIN LATERAL (
@@ -373,26 +373,26 @@ async getMatch(opportunityId: number, matchId: number) {
       ON c.id = cm."contactId"
 
     LEFT JOIN LATERAL (
-      SELECT
-        title,
-        "roleFamily"
-      FROM "contactRole"
-      WHERE "contactId" = c.id
-        AND "isCurrent" = true
-      ORDER BY
-  CASE cr."roleFamily"
-    WHEN 'HIRING_MANAGER' THEN 1
-    WHEN 'RECRUITER' THEN 2
-    WHEN 'ENGINEERING_LEADERSHIP' THEN 3
-    WHEN 'HR' THEN 4
-    WHEN 'LEADERSHIP' THEN 5
-    WHEN 'FOUNDER' THEN 6
-    WHEN 'UNKNOWN' THEN 7
-    ELSE 8
-  END,
-  cr.id DESC
-LIMIT 1
-    ) cr ON true
+  SELECT
+    cr_inner.title,
+    cr_inner."roleFamily"
+  FROM "contactRole" cr_inner
+  WHERE cr_inner."contactId" = c.id
+    AND cr_inner."isCurrent" = true
+  ORDER BY
+    CASE cr_inner."roleFamily"
+      WHEN 'HIRING_MANAGER' THEN 1
+      WHEN 'RECRUITER' THEN 2
+      WHEN 'ENGINEERING_LEADERSHIP' THEN 3
+      WHEN 'HR' THEN 4
+      WHEN 'LEADERSHIP' THEN 5
+      WHEN 'FOUNDER' THEN 6
+      WHEN 'UNKNOWN' THEN 7
+      ELSE 8
+    END,
+    cr_inner.id DESC
+  LIMIT 1
+) cr ON true
 
     LEFT JOIN LATERAL (
       SELECT
@@ -795,13 +795,13 @@ LIMIT 1
 
     LEFT JOIN LATERAL (
       SELECT
-        title,
-        "roleFamily"
-      FROM "contactRole"
-      WHERE "contactId" = c.id
-        AND "isCurrent" = true
-      ORDER BY
-  CASE cr."roleFamily"
+  cr_inner.title,
+  cr_inner."roleFamily"
+FROM "contactRole" cr_inner
+WHERE cr_inner."contactId" = c.id
+  AND cr_inner."isCurrent" = true
+ORDER BY
+  CASE cr_inner."roleFamily"
     WHEN 'HIRING_MANAGER' THEN 1
     WHEN 'RECRUITER' THEN 2
     WHEN 'ENGINEERING_LEADERSHIP' THEN 3
@@ -811,7 +811,7 @@ LIMIT 1
     WHEN 'UNKNOWN' THEN 7
     ELSE 8
   END,
-  cr.id DESC
+  cr_inner.id DESC
 LIMIT 1
     ) cr ON true
 
@@ -989,13 +989,13 @@ async getSavedMatches(opportunityId: number) {
 
     LEFT JOIN LATERAL (
       SELECT
-        title,
-        "roleFamily"
-      FROM "contactRole"
-      WHERE "contactId" = c.id
-        AND "isCurrent" = true
-      ORDER BY
-  CASE cr."roleFamily"
+  cr_inner.title,
+  cr_inner."roleFamily"
+FROM "contactRole" cr_inner
+WHERE cr_inner."contactId" = c.id
+  AND cr_inner."isCurrent" = true
+ORDER BY
+  CASE cr_inner."roleFamily"
     WHEN 'HIRING_MANAGER' THEN 1
     WHEN 'RECRUITER' THEN 2
     WHEN 'ENGINEERING_LEADERSHIP' THEN 3
@@ -1005,7 +1005,7 @@ async getSavedMatches(opportunityId: number) {
     WHEN 'UNKNOWN' THEN 7
     ELSE 8
   END,
-  cr.id DESC
+  cr_inner.id DESC
 LIMIT 1
     ) cr ON true
 
@@ -1021,5 +1021,29 @@ LIMIT 1
     opportunity,
     matches: matchesResult.rows,
   };
+}
+
+async getAll() {
+  const result = await this.db.query(
+    `
+    SELECT
+      o.id,
+      o."companyName",
+      o."roleTitle",
+      o.location,
+      o.status,
+      o."createdAt",
+      o."updatedAt",
+      (
+        SELECT COUNT(*)
+        FROM "contactMatch" cm
+        WHERE cm."opportunityId" = o.id
+      ) AS "matchCount"
+    FROM "opportunity" o
+    ORDER BY o."createdAt" DESC, o.id DESC
+    `
+  );
+
+  return result.rows;
 }
 }
