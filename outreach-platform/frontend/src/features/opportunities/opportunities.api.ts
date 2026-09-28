@@ -6,6 +6,7 @@ import {
   type OpportunityMatchesResponse,
   type OpportunityContactsResponse,
   type MatchDiagnosticsResponse,
+    type GeneratedMatchDraftResponse,
 } from './opportunities.types';
 
 export const opportunitiesApi = {
@@ -43,6 +44,18 @@ export const opportunitiesApi = {
       method: 'POST',
     });
   },
+
+  generateMatchDraft: async (
+  opportunityId: number,
+  matchId: number
+): Promise<GeneratedMatchDraftResponse> => {
+  return apiClient<GeneratedMatchDraftResponse>(
+    `/opportunities/${opportunityId}/matches/${matchId}/draft`,
+    {
+      method: 'GET',
+    }
+  );
+},
 
   getDiagnostics: async (opportunityId: number): Promise<MatchDiagnosticsResponse> => {
     return apiClient<MatchDiagnosticsResponse>(`/opportunities/${opportunityId}/matches/diagnostics`, {

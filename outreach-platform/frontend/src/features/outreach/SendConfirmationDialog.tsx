@@ -18,7 +18,7 @@ export interface SendConfirmationDialogProps {
   roleTitle: string;
   subject: string;
   body: string;
-  isSending: boolean;
+  isSending?: boolean;
 }
 
 export function SendConfirmationDialog({

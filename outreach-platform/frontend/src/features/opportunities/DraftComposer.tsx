@@ -20,6 +20,7 @@ interface DraftComposerProps {
   match: ContactMatch;
   onNext: (draft: OutreachDraft) => void;
   onBack: () => void;
+    previewOnly?: boolean;
 }
 
 export function DraftComposer({
@@ -27,6 +28,7 @@ export function DraftComposer({
   match,
   onNext,
   onBack,
+    previewOnly = false,
 }: DraftComposerProps) {
   // Original draft from match.outreach
   const originalSubject = match.outreach?.draft?.subject || `Exploring Opportunities at ${opportunity.companyName}`;
@@ -212,12 +214,18 @@ export function DraftComposer({
                   )}
                   <Button
                     size="sm"
-                    disabled={isModified || !subject.trim() || !body.trim()}
+                    disabled={
+                      previewOnly ||
+                      isModified ||
+                      !subject.trim() ||
+                      !body.trim()
+                    }  
                     onClick={handleProceed}
                     className="gap-1.5 shadow-sm"
                   >
-                    <span>Proceed to Review</span>
-                    <ArrowRight className="w-4 h-4" />
+<span>
+  {previewOnly ? 'Preview Only — Sending Disabled' : 'Proceed to Review'}
+</span>                    <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
               </div>

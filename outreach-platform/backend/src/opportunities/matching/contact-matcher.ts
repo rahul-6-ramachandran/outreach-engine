@@ -12,17 +12,7 @@ export interface MatchableContact {
   roleFamily: string | null;
 }
 
-export interface ContactMatchResult {
-  id: number;
-  name: string | null;
-  title: string | null;
-  roleFamily: string | null;
-  email: string | null;
-  emailType: string | null;
-  score: number;
-  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
-  reasons: string[];
-}
+
 
 export interface ContactMatchResult {
   id: number;
@@ -136,8 +126,10 @@ export class ContactMatcher {
       profile,
     );
 
-    const eligible = score >= 20;
-
+const eligible =
+  score >= 20 &&
+  Boolean(contact.email?.trim());
+  
     return {
       id: contact.id,
       name: contact.name,

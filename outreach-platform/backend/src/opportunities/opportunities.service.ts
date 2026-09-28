@@ -1018,9 +1018,25 @@ LIMIT 1
   );
 
   return {
-    opportunity,
-    matches: matchesResult.rows,
-  };
+  opportunity,
+  matches: matchesResult.rows.map((match) => ({
+    id: match.matchId,
+    rank: match.rank,
+    contactId: match.contactId,
+    name: match.name,
+    title: match.title,
+    roleFamily: match.roleFamily,
+    email: match.email,
+    emailType: match.emailType,
+    score: match.score,
+    reasons: match.reasons
+      ? typeof match.reasons === 'string'
+        ? JSON.parse(match.reasons)
+        : match.reasons
+      : [],
+    identityConfidence: match.identityConfidence,
+  })),
+};
 }
 
 async getAll() {

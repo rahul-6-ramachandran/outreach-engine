@@ -16,18 +16,18 @@ export class OutreachController {
     private readonly outreachService: OutreachService,
   ) {}
 
-//   @Get(
-//     'opportunities/:opportunityId/matches/:matchId/draft',
-//   )
-//   generateDraft(
-//     @Param('opportunityId') opportunityId: string,
-//     @Param('matchId') matchId: string,
-//   ) {
-//     return this.outreachService.generateMatchDraft(
-//       Number(opportunityId),
-//       Number(matchId),
-//     );
-//   }
+  @Get(
+    'opportunities/:opportunityId/matches/:matchId/draft',
+  )
+  generateDraft(
+    @Param('opportunityId') opportunityId: string,
+    @Param('matchId') matchId: string,
+  ) {
+    return this.outreachService.generateMatchDraft(
+      Number(opportunityId),
+      Number(matchId),
+    );
+  }
 
 //   @Post(
 //     'opportunities/:opportunityId/matches/:matchId/outreach',

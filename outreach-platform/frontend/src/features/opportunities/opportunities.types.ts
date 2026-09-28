@@ -49,6 +49,35 @@ export interface OutreachStrategy {
   reason?: string;
 }
 
+export interface GeneratedMatchDraftResponse {
+  opportunity: {
+    id: number;
+    companyName: string;
+    roleTitle: string;
+    location: string | null;
+    jobUrl: string | null;
+    roleFamily: string;
+  };
+  match: {
+    id: number;
+    rank: number;
+    score: number;
+    reasons: string[];
+  };
+  contact: {
+    id: number;
+    name: string | null;
+    firstName: string;
+    title: string | null;
+    roleFamily: string | null;
+    email: string | null;
+    emailType: string | null;
+    identityConfidence: string;
+  };
+  strategy: OutreachStrategy;
+  draft: OutreachDraft;
+}
+
 export interface ContactMatch {
   id: number;
   rank: number;

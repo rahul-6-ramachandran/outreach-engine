@@ -28,10 +28,9 @@ export function OutreachReview({
   match,
   draft,
   onBack,
-  onSaveToSessionHistory,
+
 }: OutreachReviewProps) {
   const [isSendDialogOpen, setIsSendDialogOpen] = useState(false);
-  const [isSending, setIsSending] = useState(false);
   const [outreachStatus, setOutreachStatus] = useState<'DRAFT' | 'APPROVED' | 'SENT'>('DRAFT');
 
   // Backend routes are commented out in the current backend working tree
@@ -196,32 +195,8 @@ export function OutreachReview({
         roleTitle={opportunity.roleTitle}
         subject={draft.subject}
         body={draft.body}
-        isSending={isSending}
         onConfirmSend={async () => {
-          setIsSending(true);
-          try {
-            // Simulated / protected send flow:
-            // When routes are enabled, calls outreachApi.send(...)
-            setIsSendDialogOpen(false);
-            setOutreachStatus('SENT');
-            onSaveToSessionHistory({
-              id: Date.now(),
-              opportunityId: opportunity.id,
-              contactId: match.contactId,
-              email: match.email || '',
-              subject: draft.subject,
-              body: draft.body,
-              status: 'SENT',
-              sentAt: new Date().toISOString(),
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              companyName: opportunity.companyName,
-              roleTitle: opportunity.roleTitle,
-              contactName: match.name || '',
-            });
-          } finally {
-            setIsSending(false);
-          }
+          setIsSendDialogOpen(false);
         }}
       />
     </div>
