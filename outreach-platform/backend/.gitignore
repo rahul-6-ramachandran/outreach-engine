@@ -1,3 +1,9 @@
 node_modules/
 dist/
 .env
+
+# AI tool configuration
+.agents/
+.claude/
+.cursor/
+.devin/

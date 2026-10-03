@@ -73,8 +73,7 @@ export function SendConfirmationDialog({
         {/* Irreversible Action Warning */}
         <Alert variant="danger" title="Real Email Transmission Warning">
           <p>
-            Confirming this action will instruct your local backend to connect to your configured SMTP provider and immediately deliver this email to the external recipient.
-          </p>
+          Confirming this action will instruct your local backend to dispatch this outreach through the configured email provider. With SMTP configured, this results in real external email delivery.          </p>
         </Alert>
 
         {sendError && (

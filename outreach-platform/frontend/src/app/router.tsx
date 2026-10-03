@@ -8,12 +8,8 @@ import { NewOutreachPage } from '@/features/opportunities/NewOutreachPage';
 import { OutreachHistoryPage } from '@/features/outreach/OutreachHistoryPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { ExistingOpportunityMatchesPage } from '@/features/opportunities/ExistingOpportunityMatchesPage';
-import { type OutreachRecord } from '@/features/outreach/outreach.types';
 
-export function createAppRouter(
-  sessionRecords: OutreachRecord[],
-  onAddSessionRecord: (record: OutreachRecord) => void
-) {
+export function createAppRouter() {
   return createBrowserRouter([
   {
     element: (
@@ -36,20 +32,19 @@ export function createAppRouter(
         children: [
           {
             index: true,
-            element: <DashboardPage sessionRecords={sessionRecords} />,
+            element: <DashboardPage />,
           },
           {
             path: '/new-outreach',
             element: (
               <NewOutreachPage
-                onAddSessionRecord={onAddSessionRecord}
               />
             ),
           },
           {
-            path: 'outreach/history',
+            path: 'outreach-history',
             element: (
-              <OutreachHistoryPage sessionRecords={sessionRecords} />
+              <OutreachHistoryPage/>
             ),
           },
           {

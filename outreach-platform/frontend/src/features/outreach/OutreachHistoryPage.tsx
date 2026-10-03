@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import {
   History,
@@ -5,6 +6,8 @@ import {
   Eye,
   Inbox,
 } from 'lucide-react';
+
+import {  outreachApi } from './outreach.api';
 import { type OutreachRecord } from './outreach.types';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/badge';
@@ -15,17 +18,26 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { formatDate } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 
-interface OutreachHistoryPageProps {
-  sessionRecords?: OutreachRecord[];
-}
 
-export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPageProps) {
+export function OutreachHistoryPage() {
+
+  const {
+  data: outreachRecords = [],
+  isLoading,
+  isError,
+  error,
+} = useQuery({
+  queryKey: ['outreach-history'],
+  queryFn: outreachApi.getHistory,
+});
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedRecord, setSelectedRecord] = useState<OutreachRecord | null>(null);
 
+
   const filteredRecords = useMemo(() => {
-    return sessionRecords.filter((record) => {
+    return outreachRecords.filter((record) => {
       const matchesSearch =
         searchQuery === '' ||
         (record.companyName && record.companyName.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -38,14 +50,16 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
 
       return matchesSearch && matchesStatus;
     });
-  }, [sessionRecords, searchQuery, statusFilter]);
+  }, [outreachRecords, searchQuery, statusFilter]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-5">
       {/* Session-Only History Disclosure */}
-      <Alert variant="info" title="Session-Only Storage Architecture">
+      <Alert variant="info" title="Persistent Outreach History">
         <p className="mt-0.5 leading-relaxed">
-          The NestJS backend does not expose a persistent outreach history listing endpoint (<code className="bg-blue-100 font-mono px-1 py-0.5 rounded text-[11px]">GET /outreach</code>). Records are maintained strictly in-memory during this active browser session. To protect private contact data, records are never stored in <code className="font-mono">localStorage</code> or <code className="font-mono">sessionStorage</code> and will reset upon page reload.
+          Outreach records are loaded from the local backend database.
+          This page displays persisted outreach lifecycle records and does not
+          send emails.
         </p>
       </Alert>
 
@@ -55,10 +69,10 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
           <div>
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <History className="w-4 h-4 text-indigo-600" />
-              <span>Outreach Records ({sessionRecords.length} in session)</span>
+              <span>Outreach Records ({outreachRecords.length})</span>
             </CardTitle>
             <CardDescription>
-              Inspection log for outreach prepared during this active application session.
+              Inspection log for persisted outreach lifecycle records.
             </CardDescription>
           </div>
 
@@ -82,7 +96,9 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
               <option value="ALL">All Statuses</option>
               <option value="DRAFT">Draft</option>
               <option value="APPROVED">Approved</option>
+              <option value="SENDING">Sending</option>
               <option value="SENT">Sent</option>
+              <option value="UNKNOWN">Unknown</option>
               <option value="FAILED">Failed</option>
               <option value="CANCELLED">Cancelled</option>
             </select>
@@ -90,12 +106,28 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
         </CardHeader>
 
         <CardContent className="p-0">
-          {sessionRecords.length === 0 ? (
+         {isLoading ? (
+                <div className="p-10 text-center text-sm text-slate-500">
+                  Loading outreach history...
+                </div>
+              ) : isError ? (
+                <div className="p-10">
+                  <EmptyState
+                    icon={Inbox}
+                    title="Could not load outreach history"
+                    description={
+                      error instanceof Error
+                        ? error.message
+                        : 'The outreach history could not be loaded from the backend.'
+                    }
+                  />
+                </div>
+              ) : outreachRecords.length === 0 ? (
             <div className="p-10">
               <EmptyState
                 icon={Inbox}
-                title="No session outreach records available"
-                description="The backend does not provide a persistent outreach history listing endpoint. Outreach items created during your current session will appear here."
+                title="No outreach records available"
+                description="No persisted outreach lifecycle records were found in the local database."
                 actionLabel="Create New Outreach"
                 onAction={() => {}}
                 secondaryAction={
@@ -110,8 +142,7 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
               <EmptyState
                 icon={Search}
                 title="No matching records"
-                description="No in-memory outreach records matched your search query or status filter."
-              />
+                description="No persisted outreach records matched your search query or status filter."              />
             </div>
           ) : (
             <div className="divide-y divide-slate-100 overflow-x-auto">
@@ -180,7 +211,7 @@ export function OutreachHistoryPage({ sessionRecords = [] }: OutreachHistoryPage
           isOpen={!!selectedRecord}
           onClose={() => setSelectedRecord(null)}
           title="Outreach Record Detail"
-          description="In-memory record created during this browser session."
+          description="Persisted outreach lifecycle record from the local database."
           className="max-w-xl"
         >
           <div className="space-y-4 text-xs">

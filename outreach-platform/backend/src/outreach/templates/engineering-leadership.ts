@@ -30,8 +30,19 @@ I'm a ${candidate.headline} with ${candidate.experience} years of production exp
 
 I'd appreciate any guidance on the team or the appropriate person to speak with about the opportunity.
 
+
 ${jobUrl ? `Job posting: ${jobUrl}\n\n` : ''}
 ${candidate.resumeUrl ? `Resume: ${candidate.resumeUrl}\n` : ''}
+
+Linkedin : https://www.linkedin.com/in/rahul6r432/
+
+Github Portfolio: https://github.com/rahul-ramachandran-432
+
+Github : https://github.com/rahul-6-ramachandran
+
+
+Project (Hirescope) : https://switch-sync.vercel.app/
+
 ${candidate.portfolioUrl ? `Portfolio: ${candidate.portfolioUrl}\n` : ''}Best regards,
 ${candidate.name}`;
   },

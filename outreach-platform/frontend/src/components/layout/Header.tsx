@@ -19,10 +19,10 @@ export function Header() {
           description: 'Create an opportunity, review candidate matches, and prepare outreach.',
           showNewAction: false,
         };
-      case '/outreach/history':
+      case '/outreach-history':
         return {
           title: 'Outreach History',
-          description: 'Review in-memory session drafts and outreach attempts.',
+          description: 'Review persisted outreach lifecycle records.',
           showNewAction: true,
         };
       case '/settings':

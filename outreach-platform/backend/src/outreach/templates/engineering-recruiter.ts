@@ -30,6 +30,15 @@ I'm a ${candidate.headline} with ${candidate.experience} years of experience bui
 
 I'd be interested in exploring whether my background could be a fit for the role.
 
+
+Linkedin : https://www.linkedin.com/in/rahul6r432/
+
+Github Portfolio: https://github.com/rahul-ramachandran-432
+
+Github : https://github.com/rahul-6-ramachandran
+
+Project (Hirescope) : https://switch-sync.vercel.app/
+
 ${jobUrl ? `Job posting: ${jobUrl}\n\n` : ''}I've attached my resume for reference.
 ${candidate.resumeUrl ? `Resume: ${candidate.resumeUrl}\n` : ''}
 ${candidate.portfolioUrl ? `Portfolio: ${candidate.portfolioUrl}\n` : ''}Best regards,

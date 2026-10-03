@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   FileEdit,
   ArrowRight,
@@ -6,21 +6,34 @@ import {
   RotateCcw,
   Sparkles,
   ShieldAlert,
-} from 'lucide-react';
-import { type Opportunity, type ContactMatch, type OutreachDraft } from './opportunities.types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert } from '@/components/ui/alert';
+} from "lucide-react";
+import {
+  type Opportunity,
+  type ContactMatch,
+  type OutreachDraft,
+} from "./opportunities.types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert } from "@/components/ui/alert";
 
 interface DraftComposerProps {
   opportunity: Opportunity;
   match: ContactMatch;
   onNext: (draft: OutreachDraft) => void;
   onBack: () => void;
-    previewOnly?: boolean;
+  previewOnly?: boolean;
+  actionLabel?: string;
+  actionLoading?: boolean;
+  actionDisabled?: boolean;
 }
 
 export function DraftComposer({
@@ -28,11 +41,15 @@ export function DraftComposer({
   match,
   onNext,
   onBack,
-    previewOnly = false,
+  previewOnly = false,
+  actionLabel = "Proceed to Review",
+  actionLoading = false,
+  actionDisabled = false,
 }: DraftComposerProps) {
-  // Original draft from match.outreach
-  const originalSubject = match.outreach?.draft?.subject || `Exploring Opportunities at ${opportunity.companyName}`;
-  const originalBody = match.outreach?.draft?.body || '';
+  const originalSubject =
+    match.outreach?.draft?.subject ||
+    `Exploring Opportunities at ${opportunity.companyName}`;
+  const originalBody = match.outreach?.draft?.body || "";
 
   const [subject, setSubject] = React.useState(originalSubject);
   const [body, setBody] = React.useState(originalBody);
@@ -58,10 +75,14 @@ export function DraftComposer({
         <Alert variant="warning" title="Draft Modification Safety Notice">
           <div className="space-y-1 mt-0.5">
             <p>
-              The backend currently generates drafts using internal templates and does not support saving custom subject or body overrides.
+              The backend currently generates drafts using internal templates
+              and does not support saving custom subject or body overrides.
             </p>
             <p className="font-semibold text-amber-900">
-              To guarantee that the email sent matches the exact reviewed content, approval and sending are locked while custom modifications exist. Reset to the system-generated draft to proceed.
+              To guarantee that the email sent matches the exact reviewed
+              content, approval and sending are locked while custom
+              modifications exist. Reset to the system-generated draft to
+              proceed.
             </p>
           </div>
         </Alert>
@@ -80,31 +101,40 @@ export function DraftComposer({
               <div>
                 <span className="text-slate-400 block text-[11px]">Name</span>
                 <span className="font-semibold text-slate-900 text-sm">
-                  {match.name || 'Unnamed Contact'}
+                  {match.name || "Unnamed Contact"}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-400 block text-[11px]">Role & Title</span>
+                <span className="text-slate-400 block text-[11px]">
+                  Role & Title
+                </span>
                 <span className="text-slate-700 font-medium">
-                  {match.title || 'Role not specified'}
+                  {match.title || "Role not specified"}
                 </span>
                 {match.roleFamily && (
-                  <Badge variant="outline" className="mt-1 text-[10px] block w-fit">
+                  <Badge
+                    variant="outline"
+                    className="mt-1 text-[10px] block w-fit"
+                  >
                     {match.roleFamily}
                   </Badge>
                 )}
               </div>
 
               <div>
-                <span className="text-slate-400 block text-[11px]">Email Address</span>
+                <span className="text-slate-400 block text-[11px]">
+                  Email Address
+                </span>
                 <span className="font-mono text-slate-800 break-all">
-                  {match.email || 'Email not available in contact record'}
+                  {match.email || "Email not available in contact record"}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-400 block text-[11px]">Company & Target Role</span>
+                <span className="text-slate-400 block text-[11px]">
+                  Company & Target Role
+                </span>
                 <span className="text-slate-700">
                   {opportunity.companyName} • {opportunity.roleTitle}
                 </span>
@@ -123,20 +153,30 @@ export function DraftComposer({
               <CardContent className="pt-4 space-y-2.5 text-xs text-slate-600">
                 {strategy.angle && (
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Angle</span>
-                    <span className="font-medium text-slate-800">{strategy.angle}</span>
+                    <span className="text-slate-400 block text-[11px]">
+                      Angle
+                    </span>
+                    <span className="font-medium text-slate-800">
+                      {strategy.angle}
+                    </span>
                   </div>
                 )}
                 {strategy.tone && (
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Tone</span>
+                    <span className="text-slate-400 block text-[11px]">
+                      Tone
+                    </span>
                     <span className="capitalize">{strategy.tone}</span>
                   </div>
                 )}
                 {strategy.reason && (
                   <div>
-                    <span className="text-slate-400 block text-[11px]">Strategy Rationale</span>
-                    <p className="text-slate-600 text-[11px] leading-relaxed">{strategy.reason}</p>
+                    <span className="text-slate-400 block text-[11px]">
+                      Strategy Rationale
+                    </span>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      {strategy.reason}
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -149,7 +189,8 @@ export function DraftComposer({
               <span>Draft Integrity Rule</span>
             </div>
             <p className="text-slate-500 leading-relaxed">
-              Never send an unreviewed or stale draft. What you see is rendered directly from your local templates.
+              Never send an unreviewed or stale draft. What you see is rendered
+              directly from your local templates.
             </p>
           </div>
         </div>
@@ -164,7 +205,8 @@ export function DraftComposer({
                   <span>Email Composer</span>
                 </CardTitle>
                 <CardDescription>
-                  Review the system-generated draft tailored for {match.name || 'this recipient'}.
+                  Review the system-generated draft tailored for{" "}
+                  {match.name || "this recipient"}.
                 </CardDescription>
               </div>
 
@@ -201,7 +243,12 @@ export function DraftComposer({
               />
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onBack}
+                  className="gap-1.5"
+                >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Contacts</span>
                 </Button>
@@ -216,17 +263,24 @@ export function DraftComposer({
                     size="sm"
                     disabled={
                       previewOnly ||
+                      actionLoading ||
+                       actionDisabled ||
                       isModified ||
                       !subject.trim() ||
                       !body.trim()
-                    }  
+                    }
                     onClick={handleProceed}
                     className="gap-1.5 shadow-sm"
                   >
-<span>
-  {previewOnly ? 'Preview Only — Sending Disabled' : 'Proceed to Review'}
-</span>                    <ArrowRight className="w-4 h-4" />
-                  </Button>
+                    <span>
+                      {actionLoading
+                        ? "Creating Draft…"
+                        : previewOnly
+                          ? "Preview Only — Sending Disabled"
+                          : actionLabel}
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>{" "}
                 </div>
               </div>
             </CardContent>

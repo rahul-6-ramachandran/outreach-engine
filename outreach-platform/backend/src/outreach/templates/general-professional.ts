@@ -31,6 +31,15 @@ I'm a ${candidate.headline} with ${candidate.experience} years of production exp
 I'd be glad to share more about my background if relevant.
 
 ${jobUrl ? `Job posting: ${jobUrl}\n\n` : ''}
+
+Linkedin : https://www.linkedin.com/in/rahul6r432/
+
+Github Portfolio: https://github.com/rahul-ramachandran-432
+
+Github : https://github.com/rahul-6-ramachandran
+
+Project (Hirescope) : https://switch-sync.vercel.app/
+
 ${candidate.resumeUrl ? `Resume: ${candidate.resumeUrl}\n` : ''}
 ${candidate.portfolioUrl ? `Portfolio: ${candidate.portfolioUrl}\n` : ''}
 Best regards,

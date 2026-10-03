@@ -17,7 +17,7 @@ export function Sidebar() {
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/new-outreach', label: 'New Outreach', icon: Send },
-    { to: '/outreach/history', label: 'Outreach History', icon: History },
+    { to: '/outreach-history', label: 'Outreach History', icon: History },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 

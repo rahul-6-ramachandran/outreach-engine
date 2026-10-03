@@ -2,8 +2,14 @@ import { apiClient } from '@/lib/api-client';
 import { type OutreachRecord, type SendOutreachResult } from './outreach.types';
 
 export const outreachApi = {
+
+  getHistory: async (): Promise<OutreachRecord[]> =>
+  apiClient<OutreachRecord[]>('/outreach', {
+    method: 'GET',
+  }),
+
   createDraft: async (opportunityId: number, matchId: number): Promise<OutreachRecord> => {
-    return apiClient<OutreachRecord>(
+  return apiClient<OutreachRecord>(
       `/opportunities/${opportunityId}/matches/${matchId}/outreach`,
       { method: 'POST' }
     );

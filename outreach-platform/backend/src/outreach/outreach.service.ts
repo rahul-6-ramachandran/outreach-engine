@@ -11,7 +11,6 @@ import { DatabaseService } from '../database/database.service.js';
 import { type EmailProvider } from './email-provider.js';
 import { buildOpportunityRoleProfile } from '../opportunities/matching/opportunity-role.js';
 
-
 import { determineOutreachStrategy } from './outreach-strategy.js';
 
 import { renderOutreachDraft } from './outreach-template.js';
@@ -302,52 +301,68 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
     return result.rows[0];
   }
 
-  async approveOutreach(outreachId: number) {
-    const result = await this.databaseService.query(
-      `
-    UPDATE "outreach"
+async approveOutreach(outreachId: number) {
+  const result = await this.databaseService.query(
+    `
+    UPDATE "outreach" o
     SET
       status = 'APPROVED',
       "approvedAt" = NOW()
-    WHERE id = $1
-      AND status = 'DRAFT'
+    WHERE o.id = $1
+      AND o.status = 'DRAFT'
+      AND EXISTS (
+        SELECT 1
+        FROM "contact" c
+        WHERE c.id = o."contactId"
+          AND c."doNotContact" = false
+      )
+      AND EXISTS (
+        SELECT 1
+        FROM "contactEmail" ce
+        WHERE ce."contactId" = o."contactId"
+          AND LOWER(TRIM(ce.email)) = LOWER(TRIM(o.email))
+          AND ce."doNotContact" = false
+      )
     RETURNING
-      id,
-      "opportunityId",
-      "contactId",
-      email,
-      subject,
-      body,
-      status,
-      "approvedAt",
-      "createdAt",
-      "updatedAt";
+      o.id,
+      o."opportunityId",
+      o."contactId",
+      o.email,
+      o.subject,
+      o.body,
+      o.status,
+      o."approvedAt",
+      o."createdAt",
+      o."updatedAt";
     `,
-      [outreachId],
+    [outreachId],
+  );
+
+  if (result.rowCount === 0) {
+    throw new Error(
+      'Outreach not found, is not currently a draft, or contact/email is no longer eligible',
     );
-
-    if (result.rowCount === 0) {
-      throw new Error('Outreach not found or is not currently a draft');
-    }
-
-    return result.rows[0];
   }
+
+  return result.rows[0];
+}
 
   async sendOutreach(outreachId: number) {
     let client: PoolClient | null = null;
-
+    let providerSucceeded = false;
     try {
       // 1. Atomically claim the outreach and create its attempt.
       client = await this.databaseService.getClient();
 
       await client.query('BEGIN');
 
-     const claimResult = await client.query<{
+      const claimResult = await client.query<{
         id: number;
         email: string;
         subject: string;
         body: string;
-      }>(`
+      }>(
+        `
         UPDATE "outreach" o
         SET
           status = 'SENDING',
@@ -375,7 +390,9 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
           o.email,
           o.subject,
           o.body;
-      `, [outreachId]);
+      `,
+        [outreachId],
+      );
 
       const outreach = claimResult.rows[0];
 
@@ -427,6 +444,8 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
         body: outreach.body,
         attachments: [resumeAttachment],
       });
+
+      providerSucceeded = true;
       // 3. Provider confirmed success.
       await this.databaseService.query(
         `
@@ -487,14 +506,16 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
         error instanceof Error ? error.message : 'Unknown email provider error';
 
       /*
-       * Important:
+       * Only mark the outreach as FAILED if the provider itself
+       * did NOT successfully accept the email.
        *
-       * If the provider already succeeded and a later DB operation
-       * failed, the attempt is no longer STARTED, so we must not
-       * overwrite it with FAILED.
+       * If the provider succeeded but a later DB operation failed,
+       * leave the attempt/outreach in their current state so the
+       * recovery mechanism can reconcile it safely.
        */
-      await this.databaseService.query(
-        `
+      if (!providerSucceeded) {
+        await this.databaseService.query(
+          `
       UPDATE "outreachAttempt"
       SET
         status = 'FAILED',
@@ -503,15 +524,11 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
       WHERE "outreachId" = $1
         AND status = 'STARTED';
       `,
-        [outreachId, errorMessage],
-      );
+          [outreachId, errorMessage],
+        );
 
-      /*
-       * Only a still-SENDING outreach is transitioned here.
-       * If it was already finalized, don't overwrite that state.
-       */
-      await this.databaseService.query(
-        `
+        await this.databaseService.query(
+          `
       UPDATE "outreach"
       SET
         status = 'FAILED',
@@ -521,8 +538,9 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
       WHERE id = $1
         AND status = 'SENDING';
       `,
-        [outreachId, errorMessage],
-      );
+          [outreachId, errorMessage],
+        );
+      }
 
       throw error;
     }
@@ -672,4 +690,41 @@ VALUES ($1, $2, $3, $4, $5, 'DRAFT', NOW())
       attempts: unknownAttempts.rows,
     };
   }
+
+  async getOutreachHistory() {
+  const result = await this.databaseService.query(
+    `
+    SELECT
+      o.id,
+      o."opportunityId",
+      o."contactId",
+      o.email,
+      o.subject,
+      o.body,
+      o.status,
+      o."approvedAt",
+      o."sentAt",
+      o."failedAt",
+      o."errorMessage",
+      o."createdAt",
+      o."updatedAt",
+
+      opp."companyName" AS "companyName",
+      opp."roleTitle" AS "roleTitle",
+      c.name AS "contactName"
+
+    FROM "outreach" o
+
+    LEFT JOIN "opportunity" opp
+      ON opp.id = o."opportunityId"
+
+    LEFT JOIN "contact" c
+      ON c.id = o."contactId"
+
+    ORDER BY o."createdAt" DESC;
+    `,
+  );
+
+  return result.rows;
+}
 }

@@ -32,6 +32,16 @@ I'd be interested in learning more about the role and the team.
 
 ${jobUrl ? `Job posting: ${jobUrl}\n\n` : ''}
 ${candidate.resumeUrl ? `Resume: ${candidate.resumeUrl}\n` : ''}
+
+
+Linkedin : https://www.linkedin.com/in/rahul6r432/
+
+Github Portfolio: https://github.com/rahul-ramachandran-432
+
+Github : https://github.com/rahul-6-ramachandran
+
+Project (Hirescope) : https://switch-sync.vercel.app/
+
 ${candidate.portfolioUrl ? `Portfolio: ${candidate.portfolioUrl}\n` : ''}
 Best regards,
 ${candidate.name}`;

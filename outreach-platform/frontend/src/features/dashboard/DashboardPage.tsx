@@ -14,18 +14,17 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { opportunitiesApi } from '../opportunities/opportunities.api';
-import { type OutreachRecord } from '../outreach/outreach.types';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/ui/badge';
 import { LoadingCard } from '@/components/common/LoadingState';
 import { formatDate } from '@/lib/utils';
 
-interface DashboardPageProps {
-  sessionRecords?: OutreachRecord[];
-}
+import { outreachApi } from '../outreach/outreach.api';
 
-export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
+
+
+export function DashboardPage() {
   // Query matching health from real backend endpoint GET /opportunities/matches/health
   const {
     data: health,
@@ -38,6 +37,8 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
   });
 
 
+
+
   const {
   data: opportunities,
   isLoading: isLoadingOpportunities,
@@ -47,6 +48,16 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
   queryFn: () => opportunitiesApi.getAll(),
   retry: 1,
 });
+
+ const {
+    data: outreachRecords,
+    isLoading: isLoadingOutreach,
+    isError: isOutreachError,
+  } = useQuery({
+    queryKey: ['outreach', 'history'],
+    queryFn: () => outreachApi.getHistory(),
+    retry: 1,
+  });
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Welcome & Primary Action Hero */}
@@ -192,7 +203,7 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
         </Link>
       </div>
     ) : (
-      <div className="divide-y divide-slate-100">
+      <div className="max-h-[min(30vh,16rem)] divide-y divide-slate-100 overflow-y-auto overscroll-contain">
         {opportunities.map((opportunity) => (
           <div
             key={opportunity.id}
@@ -281,29 +292,48 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
           </CardContent>
         </Card>
 
-        {/* Recent Session Activity */}
+                {/* Recent Outreach Activity */}
         <Card>
           <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <History className="w-4 h-4 text-indigo-600" />
-                <span>Recent Session Outreach</span>
+                <span>Recent Outreach</span>
               </CardTitle>
               <CardDescription>
-                Outreach drafts created during this active browser session.
+                Latest persisted outreach lifecycle records from the local database.
               </CardDescription>
             </div>
-            <Link to="/outreach/history" className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+
+            <Link
+              to="/outreach-history"
+              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+            >
               <span>View All</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </CardHeader>
+
           <CardContent className="p-0">
-            {sessionRecords.length === 0 ? (
+            {isLoadingOutreach ? (
+              <div className="p-8 text-center text-xs text-slate-500">
+                Loading recent outreach...
+              </div>
+            ) : isOutreachError ? (
+              <div className="p-8 text-center text-xs text-slate-500">
+                <AlertCircle className="w-5 h-5 text-amber-500 mx-auto mb-2" />
+                Could not load recent outreach history.
+              </div>
+            ) : !outreachRecords?.length ? (
               <div className="p-8 text-center text-xs text-slate-500 space-y-2">
-                <p>No outreach drafts created yet in this session.</p>
+                <p>No outreach records yet.</p>
+
                 <Link to="/new-outreach">
-                  <Button size="sm" variant="outline" className="gap-1.5 mt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 mt-2"
+                  >
                     <PlusCircle className="w-3.5 h-3.5" />
                     <span>Create First Outreach</span>
                   </Button>
@@ -311,7 +341,7 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {sessionRecords.slice(0, 5).map((record) => (
+                {outreachRecords.slice(0, 5).map((record) => (
                   <div
                     key={record.id}
                     className="p-3.5 flex items-center justify-between text-xs hover:bg-slate-50 transition-colors"
@@ -320,12 +350,18 @@ export function DashboardPage({ sessionRecords = [] }: DashboardPageProps) {
                       <div className="font-semibold text-slate-900">
                         {record.contactName || record.email}
                       </div>
+
                       <div className="text-[11px] text-slate-400">
-                        {record.companyName} • {record.roleTitle}
+                        {record.companyName || 'Unknown company'}
+                        {record.roleTitle
+                          ? ` • ${record.roleTitle}`
+                          : ''}
                       </div>
                     </div>
+
                     <div className="flex items-center gap-2">
                       <StatusBadge status={record.status} />
+
                       <span className="text-[10px] text-slate-400">
                         {formatDate(record.createdAt)}
                       </span>
