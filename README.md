@@ -71,6 +71,38 @@ Persistent Outreach History
 The send lifecycle is persisted rather than being maintained only in
 frontend session state.
 
+
+
+## Screenshots
+
+> The screenshots below should use sanitized demo data only. No real
+> contact information is included in the public repository.
+
+### Dashboard
+
+<img width="1920" height="1080" alt="dashboard1" src="https://github.com/user-attachments/assets/6f644508-55c9-4e75-9555-b802b362f470" />
+
+
+### Opportunity matching
+
+<img width="1920" height="1080" alt="new-outreach" src="https://github.com/user-attachments/assets/40306d78-6281-4dc5-a382-55d62eb7bcce" />
+<img width="1920" height="1080" alt="company-contacts" src="https://github.com/user-attachments/assets/d04da93c-d5ba-45b0-a9cb-bfb5f3736346" />
+
+### Draft and send
+
+<img width="1920" height="1080" alt="draft" src="https://github.com/user-attachments/assets/f20117ef-bd8c-4d75-967f-b431487b0ce5" />
+
+### Send confirmation
+
+<img width="1920" height="1080" alt="send" src="https://github.com/user-attachments/assets/1e31b80a-68c8-4318-9724-b0117c9003b3" />
+
+
+### Outreach history
+
+<img width="1920" height="1080" alt="outreach-history" src="https://github.com/user-attachments/assets/7aface54-dd63-4a9f-aafc-5b98eb89bfe7" />
+
+------------------------------------------------------------------------
+
 ### Outreach states
 
 ``` text
@@ -484,36 +516,6 @@ The completed implementation has been verified with:
 -   backend production build passing
 -   frontend production build passing
 -   SMTP delivery successfully verified with a controlled test recipient
-
-------------------------------------------------------------------------
-
-## Screenshots
-
-> The screenshots below should use sanitized demo data only. No real
-> contact information is included in the public repository.
-
-### Dashboard
-
-<img width="1920" height="1080" alt="dashboard1" src="https://github.com/user-attachments/assets/6f644508-55c9-4e75-9555-b802b362f470" />
-
-
-### Opportunity matching
-
-<img width="1920" height="1080" alt="new-outreach" src="https://github.com/user-attachments/assets/40306d78-6281-4dc5-a382-55d62eb7bcce" />
-<img width="1920" height="1080" alt="company-contacts" src="https://github.com/user-attachments/assets/d04da93c-d5ba-45b0-a9cb-bfb5f3736346" />
-
-### Draft and send
-
-<img width="1920" height="1080" alt="draft" src="https://github.com/user-attachments/assets/f20117ef-bd8c-4d75-967f-b431487b0ce5" />
-
-### Send confirmation
-
-<img width="1920" height="1080" alt="send" src="https://github.com/user-attachments/assets/1e31b80a-68c8-4318-9724-b0117c9003b3" />
-
-
-### Outreach history
-
-<img width="1920" height="1080" alt="outreach-history" src="https://github.com/user-attachments/assets/7aface54-dd63-4a9f-aafc-5b98eb89bfe7" />
 
 ------------------------------------------------------------------------
 
